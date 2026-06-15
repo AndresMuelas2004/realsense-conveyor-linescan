@@ -67,8 +67,8 @@ What happens:
 
 1. It prints which camera is connected and a short usage note.
 2. With the belt running, it continuously times one full revolution of the encoder.
-   After 5 revolutions it reports a belt speed (the rolling mean of the last 5) and
-   keeps updating it, so you can vary the belt speed live.
+   After 7 revolutions it reports the first belt speed (a rolling mean of the last 5)
+   and keeps updating it every revolution, so you can vary the belt speed live.
 3. When you see **`___ Parts may now pass ___`**, the belt depth has been measured
    and parts can start flowing. (The first frames are spent measuring belt depth; a
    part present during that window would confuse detection.)

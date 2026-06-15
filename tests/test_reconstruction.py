@@ -50,10 +50,43 @@ def test_overlap_with_history():
     assert result == 22
 
 
+def test_overlap_truncates_toward_zero():
+    # The result is an int() of the row count, i.e. the fractional part is
+    # dropped (truncated, not rounded). overlap_time chosen so the exact count
+    # is 41.5 rows -> 41.
+    margin, advance_now, offset_now, interval, pixels = 0.083, 0.0, 0.0, 0.2, 100
+    overlap_time = margin - advance_now + offset_now
+    assert _expected_overlap(pixels, overlap_time, interval) == 41  # 100*0.083/0.2 = 41.5
+
+    result = compute_overlap_pixels([advance_now], [offset_now], interval, margin, 0.3, pixels)
+    assert result == 41
+
+
+def test_overlap_can_be_negative_when_capture_runs_late():
+    # If a capture is late rather than early, the formula yields a negative trim;
+    # it is intentionally NOT clamped to zero (faithful to the original).
+    advances, offsets, interval, margin, pixels = [0.0, 0.5], [0.0, 0.0], 0.2, 0.01, 100
+    overlap_time = margin + advances[-2] - advances[-1] + offsets[-1] - offsets[-2]
+    expected = _expected_overlap(pixels, overlap_time, interval)
+
+    result = compute_overlap_pixels(advances, offsets, interval, margin, 0.3, pixels)
+    assert result == expected
+    assert result == -245
+
+
 def test_belt_depth_is_mean_of_all_samples():
     assert belt_depth_from_samples([[10, 20], [30, 40]]) == 25.0
     assert belt_depth_from_samples([[100.0, 100.0, 100.0]] * 5) == 100.0
     assert belt_depth_from_samples([[0, 70]]) == 35.0
+
+
+def test_belt_depth_single_sample_equals_that_sample():
+    assert belt_depth_from_samples([[12.5]]) == 12.5
+
+
+def test_belt_depth_averages_across_rows_and_columns():
+    # Every element contributes equally regardless of how it is grouped.
+    assert belt_depth_from_samples([[1, 2, 3], [4, 5, 6]]) == 3.5
 
 
 def test_belt_depth_returns_float():

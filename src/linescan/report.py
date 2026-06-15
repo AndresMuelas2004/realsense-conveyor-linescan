@@ -14,6 +14,8 @@ from __future__ import annotations
 
 import datetime
 import json
+from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
 from .calibration import CameraCalibration
@@ -89,7 +91,7 @@ def _build_record(
     }
 
 
-def _safe_load(loader, path) -> float | None:
+def _safe_load(loader: Callable[[Path], float], path: Path) -> float | None:
     """Load a state value, returning ``None`` if it has not been written yet."""
     try:
         return loader(path)

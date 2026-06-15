@@ -20,6 +20,8 @@ venv/
 reconstructions/
 strips/
 history/
+# Chessboard views grabbed by `linescan calibrate` (default --image-dir).
+calibration_images/
 # Rolling parameter log appended on every capture run.
 camera_parameters_log.json
 # Runtime state written by the Hall sensor on every revolution.
