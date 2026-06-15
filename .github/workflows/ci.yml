@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install tooling and runtime dependencies
+        # opencv-python-headless avoids the system GUI libraries (libGL, etc.)
+        # that the regular opencv-python wheel needs on a headless runner.
+        run: pip install numpy opencv-python-headless pytest ruff mypy
+
+      - name: Install the package without its rig-only dependencies
+        # The hardware deps (pyrealsense2/pyserial/keyboard) are imported lazily
+        # and are not needed here; installing them on CI would fail or be pointless.
+        run: pip install -e . --no-deps
+
+      - name: Lint (ruff)
+        run: ruff check src tests
+
+      - name: Type-check (mypy)
+        run: mypy --config-file pyproject.toml src
+
+      - name: Test (pytest)
+        run: pytest
