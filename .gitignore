@@ -1,0 +1,31 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# --- IDEs ---
+.idea/
+.vscode/
+
+# --- Runtime output produced by the station (not source) ---
+# Reconstructed images, per-piece strips and the rolling history archive.
+reconstructions/
+strips/
+history/
+# Rolling parameter log appended on every capture run.
+camera_parameters_log.json
+# Runtime state written by the Hall sensor on every revolution.
+data/state/belt_speed.npz
+data/state/photo_interval.npz
+
+# NOTE: data/calibration/chessboard_calibration.npz and data/state/height_mm.npy
+# are intentionally committed as a working example so the package is usable and
+# testable out of the box.

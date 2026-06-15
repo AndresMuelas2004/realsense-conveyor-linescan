@@ -1,0 +1,69 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "linescan"
+version = "1.0.0"
+description = "Turn an Intel RealSense depth camera into a synchronized line-scan scanner for objects on a moving conveyor belt: reconstruct and measure parts on the fly."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Andres Muelas" }]
+keywords = [
+    "computer-vision",
+    "realsense",
+    "line-scan",
+    "conveyor-belt",
+    "3d-reconstruction",
+    "metrology",
+    "opencv",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Image Processing",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+]
+dependencies = [
+    "numpy>=1.21",
+    "opencv-python>=4.5",
+    # --- Rig-only dependencies (imported lazily, only needed on the physical station) ---
+    "pyrealsense2>=2.50",  # Intel RealSense SDK 2.0 Python bindings
+    "pyserial>=3.5",       # serial link to the Hall-sensor microcontroller
+    "keyboard>=0.13",      # global key polling to stop long-running tools
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "ruff>=0.4", "mypy>=1.8"]
+
+[project.urls]
+Homepage = "https://github.com/AndresMuelas2004/realsense-conveyor-linescan"
+Repository = "https://github.com/AndresMuelas2004/realsense-conveyor-linescan"
+
+[project.scripts]
+linescan = "linescan.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/linescan"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM"]
+ignore = ["E501"]  # line length is handled by the formatter
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra -q"
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true   # pyrealsense2/serial/keyboard ship no type stubs
